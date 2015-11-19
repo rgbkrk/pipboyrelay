@@ -25,6 +25,6 @@
   "homepage": "https://github.com/rgbkrk/pipboyrelay#readme",
   "dependencies": {
     "hexy": "^0.2.7",
-    "pipboylib": "0.0.1"
+    "pipboylib": "0.0.2"
   }
 }
