@@ -1,0 +1,27 @@
+{
+  "name": "pipboyrelay",
+  "version": "0.0.0",
+  "description": "Relay for the pip boy from Fallout 4",
+  "main": "cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rgbkrk/pipboyrelay.git"
+  },
+  "keywords": [
+    "pipboy",
+    "fallout4"
+  ],
+  "author": "Kyle Kelley <rgbkrk@gmail.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/rgbkrk/pipboyrelay/issues"
+  },
+  "homepage": "https://github.com/rgbkrk/pipboyrelay#readme",
+  "dependencies": {
+    "hexy": "^0.2.7",
+    "pipboylib": "0.0.1"
+  }
+}
