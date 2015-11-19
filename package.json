@@ -14,6 +14,9 @@
     "pipboy",
     "fallout4"
   ],
+  "bin": {
+    "pipboyrelay": "cli.js"
+  },
   "author": "Kyle Kelley <rgbkrk@gmail.com>",
   "license": "BSD-3-Clause",
   "bugs": {

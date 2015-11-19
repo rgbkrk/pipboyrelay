@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var pipboylib = require('pipboylib')
 var relay = require('pipboylib/lib/relay')
 
