@@ -32,7 +32,7 @@ falloutClient.discover(function (error, server) {
     if (dataChunk.length < data.length) {
       dots = '...'
     }
-    console.log('[UDP Relay] <', t, '>')
+    console.log('[UDP Relay] ', t)
     console.log(hexy.hexy(dataChunk) + dots)
   })
 
@@ -53,7 +53,7 @@ falloutClient.discover(function (error, server) {
       dots = '...'
     }
 
-    console.log('[TCP Relay] <', t, '>')
+    console.log('[TCP Relay] ', t)
     console.log(hexy.hexy(dataChunk) + dots)
   })
   console.log('UDP and TCP Relay created for: ', server.info)
