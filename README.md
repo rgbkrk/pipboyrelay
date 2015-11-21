@@ -1,6 +1,10 @@
 # pipboyrelay
 
+[![npm version](https://badge.fury.io/js/pipboyrelay.svg)](https://badge.fury.io/js/pipboyrelay)
+
 Relay for the pip boy app for Fallout 4
+
+![It's Close to Metal!](https://8d8dcdd952aa2708c2ff-519cda130c91226e76017ae910bdb276.ssl.cf1.rackcdn.com/close-to-metal-ba0f30d76e986ef9fa02e7fbb1c3a8a954b268777325adf87250e3f0cfc4ef17.png)
 
 Totally a work in progress.
 
