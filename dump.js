@@ -16,13 +16,17 @@ var falloutClient = new pipboylib.DiscoveryClient()
 var maxShowLength = 48
 var fs = require('fs')
 
-var SequentialWriter = function SequentialWriter () {
-  this.prefix = 'dumpy'
+var SequentialWriter = function SequentialWriter (prefix) {
+  this.prefix = prefix
+  if (!prefix) {
+    this.prefix = 'dumpy'
+  }
+
   this.payloadNum = 0
 }
 
 SequentialWriter.prototype.write = function write (data, telemetry) {
-  var name = sprintf('%s.%s.%s.%02d.bin', this.prefix, telemetry.src.port, telemetry.dst.port, this.payloadNum)
+  var name = sprintf('%s.%02d.%s.%s.bin', this.prefix, this.payloadNum, telemetry.src.port, telemetry.dst.port)
   this.payloadNum++
 
   fs.writeFile(name, data, function (err) {
