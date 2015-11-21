@@ -4,6 +4,8 @@ Relay for the pip boy app for Fallout 4
 
 Totally a work in progress.
 
+[Read the blog post for more details](https://getcarina.com/blog/fallout-4-service-discovery-and-relay)
+
 ## Requirements
 
 * Fallout 4 for the PC or PS4. (XBONE has not been diagnosed)
