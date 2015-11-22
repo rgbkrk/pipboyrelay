@@ -4,6 +4,7 @@ var pipboylib = require('pipboylib')
 var relay = require('pipboylib/lib/relay')
 
 var hexy = require('hexy')
+var binary = require('binary')
 var sprintf = require('sprintf-js').sprintf
 
 var util = require('util')
