@@ -24,7 +24,9 @@
   },
   "homepage": "https://github.com/rgbkrk/pipboyrelay#readme",
   "dependencies": {
+    "binary": "^0.3.0",
     "hexy": "^0.2.7",
-    "pipboylib": "0.0.4"
+    "pipboylib": "0.0.4",
+    "sprintf-js": "^1.0.3"
   }
 }
