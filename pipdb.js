@@ -1,36 +1,49 @@
 require('buffertools').extend();
 
-var dbIndices = {};
-var dbTypes = {};
+var Types = {
+  Bool: 0,
+  Int8: 1,
+  UInt8: 2,
+  Int32: 3,
+  UInt32: 4,
+  Float: 5,
+  String: 6,
+  List: 7,
+  Dictionary: 8
+};
 
-var dbEntryType = ['Bool', 'Int8', 'UInt8', 'Int32', 'UInt32', 'Float', 'String', 'List', 'Dictionary'];
+var Database = {
+  indexedProperties: {},
+  propertyTypes: {}
+};
 
 exports.decodeDBEntries = function(buffer) {
   var cursor = 0;
   while(cursor <= buffer.length - 5) {
     var type = buffer.readUInt8(cursor);
+    Database.propertyTypes[id] = type;
+
     var id = buffer.readUInt32LE(cursor + 1);
-    dbTypes[id] = dbEntryType[type];
 
     cursor += 5;
 
     if(type <= 2) { // 8 bit number
       if(type == 0) {
-        dbIndices[id] = (buffer.readUInt8(cursor) === 0) ? false : true;
+        Database.indexedProperties[id] = (buffer.readUInt8(cursor) === 0) ? false : true;
       } else if(type == 1) {
-        dbIndices[id] = buffer.readInt8(cursor);
+        Database.indexedProperties[id] = buffer.readInt8(cursor);
       } else if(type == 2) {
-        dbIndices[id] = buffer.readUInt8(cursor);
+        Database.indexedProperties[id] = buffer.readUInt8(cursor);
       }
 
       cursor += 1;
     } else if(type <= 5) { // 32 bit number
       if(type === 3) {
-        dbIndices[id] = buffer.readInt32LE(cursor);
+        Database.indexedProperties[id] = buffer.readInt32LE(cursor);
       } else if(type === 4) {
-        dbIndices[id] = buffer.readUInt32LE(cursor);
+        Database.indexedProperties[id] = buffer.readUInt32LE(cursor);
       } else if(type === 5) {
-        dbIndices[id] = buffer.readFloatLE(cursor);
+        Database.indexedProperties[id] = buffer.readFloatLE(cursor);
       }
 
       cursor += 4;
@@ -44,7 +57,7 @@ exports.decodeDBEntries = function(buffer) {
         }
       }
 
-      dbIndices[id] = s;
+      Database.indexedProperties[id] = s;
       cursor += s.length + 1;
     } else if(type === 7) { // list
       var count = buffer.readUInt16LE(cursor);
@@ -57,7 +70,7 @@ exports.decodeDBEntries = function(buffer) {
         cursor += 4;
       }
 
-      dbIndices[id] = refs;
+      Database.indexedProperties[id] = refs;
     } else if(type === 8) { // dict
       var count = buffer.readUInt16LE(cursor);
       cursor += 2;
@@ -81,31 +94,31 @@ exports.decodeDBEntries = function(buffer) {
         dict[name] = refId;
       }
 
-      dbIndices[id] = dict;
+      Database.indexedProperties[id] = dict;
       cursor += 2; // skip dummy uint16
     }
   }
 }
 
 exports.normalizeDBEntry = function(index) {
-  if(dbTypes[index] === 'Dictionary') {
+  if(Database.propertyTypes[index] === Types.Dictionary) {
     var dict = {};
 
-    for(var i in dbIndices[index]) {
-      dict[i] = exports.normalizeDBEntry(dbIndices[index][i]);
+    for(var i in Database.indexedProperties[index]) {
+      dict[i] = exports.normalizeDBEntry(Database.indexedProperties[index][i]);
     }
 
     return dict;
-  } else if(dbTypes[index] === 'List') {
+  } else if(Database.propertyTypes[index] == Types.List) {
     var list = [];
 
-    for(var i in dbIndices[index]) {
-      list.push(exports.normalizeDBEntry(dbIndices[index][i]));
+    for(var i in Database.indexedProperties[index]) {
+      list.push(exports.normalizeDBEntry(Database.indexedProperties[index][i]));
     }
 
     return list;
   } else {
-    return dbIndices[index];
+    return Database.indexedProperties[index];
   }
 }
 
