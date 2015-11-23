@@ -12,7 +12,9 @@ function decodePacket(buffer) {
   return { size: size, channel: channel, content: content };
 }
 
-exports.update = function(data, callback) {
+exports.onPacket = null;
+
+exports.update = function(data) {
   buffer = buffer.concat(data);
 
   if(!expectedSize) {
@@ -20,7 +22,12 @@ exports.update = function(data, callback) {
   }
 
   if(buffer.length >= expectedSize) {
-    callback(decodePacket(buffer.slice(0, expectedSize)));
+    var packet = decodePacket(buffer.slice(0, expectedSize));
+
+    if(exports.onPacket) {
+      exports.onPacket(packet);
+    }
+
     buffer = buffer.slice(expectedSize);
     expectedSize = null;
   }

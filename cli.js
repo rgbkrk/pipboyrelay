@@ -20,7 +20,7 @@ falloutClient.discover(function (error, server) {
     console.error(error);
     return;
   }
-  
+
   console.log('Discovered: ', server);
 
   // Set up a new relay for each running server
@@ -44,19 +44,20 @@ falloutClient.discover(function (error, server) {
   tcpServerInfo.port = pipboylib.FALLOUT_TCP_PORT;
   tcpServerInfo.family = server.info.family;
 
+  pipdecode.onPacket = function(packet) {
+    if(packet.channel === 1) {
+      var handshake = JSON.parse(packet.content);
+      console.log("Connected! Lang: " + handshake.lang + ', Version: ' + handshake.version);
+    } else if(packet.channel === 3) {
+      pipdb.decodeDBEntries(packet.content);
+      db = pipdb.getNormalizedDB();
+      console.log("DB Update!");
+    }
+  }
+
   var tcpRelay = new TCPRelay()
   tcpRelay.listen(tcpServerInfo, function (data, telemetry) {
-    pipdecode.update(data, function(packet) {
-      if(packet.channel === 1) {
-        var handshake = JSON.parse(packet.content);
-
-        console.log("Connected! Lang: " + handshake.lang + ', Version: ' + handshake.version);
-      } else if(packet.channel === 3) {
-        pipdb.decodeDBEntries(packet.content);
-        db = pipdb.getNormalizedDB();
-        console.log("DB Update!");
-      }
-    });
+    pipdecode.update(data);
   });
 
   console.log('UDP and TCP Relay created for: ', server.info);
