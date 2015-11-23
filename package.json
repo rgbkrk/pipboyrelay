@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/rgbkrk/pipboyrelay#readme",
   "dependencies": {
+    "bufferutil": "^1.2.1",
     "hexy": "^0.2.7",
     "pipboylib": "0.0.7"
   }
