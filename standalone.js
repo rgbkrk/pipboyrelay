@@ -2,8 +2,9 @@ var dgram = require('dgram');
 var net = require('net');
 var io = require('socket.io')();
 var hexy = require('hexy');
+var pipboylib = require('pipboylib');
 
-var discovery = require('./discover');
+var falloutClient = new pipboylib.DiscoveryClient();
 var pipdecode = require('./pipdecode');
 var pipdb = require('./pipdb');
 
@@ -25,7 +26,7 @@ io.on('connection', function(socket) {
 
 console.log("Socket.io server listening on port " + SOCKETIO_PORT);
 
-discovery.discover(function(err, server) {
+falloutClient.discover(function(err, server) {
   if(err) {
     console.error('Failed to discover Fallout 4 network service, reason: ' + err);
     process.exit(1);
