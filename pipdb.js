@@ -21,9 +21,8 @@ exports.decodeDBEntries = function(buffer) {
   var cursor = 0;
   while(cursor <= buffer.length - 5) {
     var type = buffer.readUInt8(cursor);
-    Database.propertyTypes[id] = type;
-
     var id = buffer.readUInt32LE(cursor + 1);
+    Database.propertyTypes[id] = type;
 
     cursor += 5;
 
@@ -101,7 +100,7 @@ exports.decodeDBEntries = function(buffer) {
 }
 
 exports.normalizeDBEntry = function(index) {
-  if(Database.propertyTypes[index] === Types.Dictionary) {
+  if(Database.propertyTypes[index] == Types.Dictionary) {
     var dict = {};
 
     for(var i in Database.indexedProperties[index]) {
@@ -123,5 +122,6 @@ exports.normalizeDBEntry = function(index) {
 }
 
 exports.getNormalizedDB = function() {
-  return exports.normalizeDBEntry(0);
+  var db = exports.normalizeDBEntry(0);
+  return db;
 }

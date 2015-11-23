@@ -1,8 +1,6 @@
 require('buffertools').extend();
 
-var hexy = require('hexy');
 var buffer = new Buffer('');
-
 var expectedSize = null;
 
 function decodePacket(buffer) {
