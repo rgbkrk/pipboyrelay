@@ -20,6 +20,7 @@ falloutClient.discover(function (error, server) {
     console.error(error);
     return;
   }
+  
   console.log('Discovered: ', server);
 
   // Set up a new relay for each running server
@@ -36,7 +37,7 @@ falloutClient.discover(function (error, server) {
     }
     console.log('[UDP Relay] ', t);
     console.log(hexy.hexy(dataChunk) + dots);
-  })
+  });
 
   var tcpServerInfo = {};
   tcpServerInfo.address = server.info.address;
