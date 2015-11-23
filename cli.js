@@ -51,7 +51,6 @@ falloutClient.discover(function (error, server) {
     } else if(packet.channel === 3) {
       pipdb.decodeDBEntries(packet.content);
       db = pipdb.getNormalizedDB();
-      console.log("DB Update!");
     }
   }
 

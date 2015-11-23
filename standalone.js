@@ -1,6 +1,7 @@
 var dgram = require('dgram');
 var net = require('net');
 var io = require('socket.io')();
+var hexy = require('hexy');
 
 var discovery = require('./discover');
 var pipdecode = require('./pipdecode');
@@ -8,6 +9,11 @@ var pipdb = require('./pipdb');
 
 var FALLOUT_TCP_PORT = 27000;
 var SOCKETIO_PORT = 3000;
+
+var HEARTBEAT_BUF = new Buffer(5);
+for(var i = 0; i < 5; i++) {
+  HEARTBEAT_BUF[i] = 0;
+}
 
 var db = {};
 
@@ -31,6 +37,10 @@ discovery.discover(function(err, server) {
 
   client.on('connect', function () {
     console.log("Socket connected!");
+
+    setInterval(function() { // send heartbeat every 100ms or we get disconnected
+      client.write(HEARTBEAT_BUF);
+    }, 100);
   });
 
   client.on('data', function (message) {
@@ -54,12 +64,7 @@ discovery.discover(function(err, server) {
 
   pipdecode.onPacket = function(packet) {
     if(packet.channel === 0) {
-      var buf = new Buffer(5);
-      for(var i = 0; i < 5; i++) {
-        buf[i] = 0;
-      }
-
-      client.write(buf);
+      process.stdout.write('.');
     } else if(packet.channel === 1) {
       var handshake = JSON.parse(packet.content);
       console.log("Got handshake! Lang: " + handshake.lang + ', Version: ' + handshake.version);
@@ -67,7 +72,7 @@ discovery.discover(function(err, server) {
       pipdb.decodeDBEntries(packet.content);
       db = pipdb.getNormalizedDB();
       io.emit('db_update', db);
-      process.stdout.write('.');
+      process.stdout.write('o');
     }
   }
 
