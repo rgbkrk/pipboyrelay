@@ -7,6 +7,7 @@ var pipboylib = require('pipboylib');
 var falloutClient = new pipboylib.DiscoveryClient();
 var pipdecode = require('./pipdecode');
 var pipdb = require('./pipdb');
+var pipmap = require('./pipmap');
 
 var FALLOUT_TCP_PORT = 27000;
 var SOCKETIO_PORT = 3000;
@@ -64,16 +65,25 @@ falloutClient.discover(function(err, server) {
   });
 
   pipdecode.onPacket = function(packet) {
-    if(packet.channel === 0) {
+    if(packet.channel === 0) { // heartbeat
       process.stdout.write('.');
-    } else if(packet.channel === 1) {
+    } else if(packet.channel === 1) { // handshake
       var handshake = JSON.parse(packet.content);
       console.log("Got handshake! Lang: " + handshake.lang + ', Version: ' + handshake.version);
-    } else if(packet.channel === 3) {
-      pipdb.decodeDBEntries(packet.content);
+    } else if(packet.channel === 3) { // db update
+      try {
+        pipdb.decodeDBEntries(packet.content);
+      } catch(err) {
+        console.error('Failed to decode DB entries!');
+      }
+
       db = pipdb.getNormalizedDB();
       io.emit('db_update', db);
       process.stdout.write('o');
+    } else if(packet.channel === 4) { // local map update
+      var map = pipmap.decodeMap(packet.content);
+      console.log(JSON.stringify(map));
+      io.emit('map_update', map);
     }
   }
 
