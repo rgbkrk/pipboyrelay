@@ -5,7 +5,6 @@ var hexy = require('hexy');
 var pipboylib = require('pipboylib');
 
 var falloutClient = new pipboylib.DiscoveryClient();
-var pipmap = require('./pipmap');
 
 var FALLOUT_TCP_PORT = 27000;
 var SOCKETIO_PORT = 3000;
