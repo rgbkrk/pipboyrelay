@@ -5,8 +5,6 @@ var hexy = require('hexy');
 var pipboylib = require('pipboylib');
 
 var falloutClient = new pipboylib.DiscoveryClient();
-var pipdecode = require('./pipdecode');
-var pipdb = require('./pipdb');
 var pipmap = require('./pipmap');
 
 var FALLOUT_TCP_PORT = 27000;
@@ -18,23 +16,12 @@ for(var i = 0; i < 5; i++) {
 }
 
 var db = {};
+var pipDecode = pipboylib.PipDecode();
+var pipDB = pipboylib.PipDB();
 
-io.listen(SOCKETIO_PORT);
-io.on('connection', function(socket) {
-  console.log('Socket.io client connected!');
-  socket.emit('db_update', db);
-});
+console.log('Looking for Fallout 4 network service..');
 
-console.log("Socket.io server listening on port " + SOCKETIO_PORT);
-
-falloutClient.discover(function(err, server) {
-  if(err) {
-    console.error('Failed to discover Fallout 4 network service, reason: ' + err);
-    process.exit(1);
-  }
-
-  console.log('Discovered Fallout 4 service at ' + server.info.address + ':' + server.info.port);
-
+function createClient() {
   var client = new net.Socket()
 
   client.on('connect', function () {
@@ -45,8 +32,8 @@ falloutClient.discover(function(err, server) {
     }, 100);
   });
 
-  client.on('data', function (message) {
-    pipdecode.update(message);
+  client.on('data', function (data) {
+    pipDecode.emit('data', data);
   });
 
   client.on('close', function (hadError) {
@@ -64,28 +51,37 @@ falloutClient.discover(function(err, server) {
     process.exit(1);
   });
 
-  pipdecode.onPacket = function(packet) {
-    if(packet.channel === 0) { // heartbeat
-      process.stdout.write('.');
-    } else if(packet.channel === 1) { // handshake
-      var handshake = JSON.parse(packet.content);
-      console.log("Got handshake! Lang: " + handshake.lang + ', Version: ' + handshake.version);
-    } else if(packet.channel === 3) { // db update
-      try {
-        pipdb.decodeDBEntries(packet.content);
-      } catch(err) {
-        console.error('Failed to decode DB entries!');
-      }
+  return client;
+}
 
-      db = pipdb.getNormalizedDB();
-      io.emit('db_update', db);
-      process.stdout.write('o');
-    } else if(packet.channel === 4) { // local map update
-      var map = pipmap.decodeMap(packet.content);
-      console.log(JSON.stringify(map));
-      io.emit('map_update', map);
-    }
+falloutClient.discover(function(err, server) {
+  if(err) {
+    console.error('Failed to discover Fallout 4 network service, reason: ' + err);
+    process.exit(1);
   }
 
+  console.log('Discovered Fallout 4 service at ' + server.info.address + ':' + server.info.port);
+
+  io.listen(SOCKETIO_PORT);
+  console.log('Socket.io server listening on port ' + SOCKETIO_PORT);
+
+  pipDecode.on('db_update', function(data) {
+    pipDB.emit('data', data);
+  });
+
+  pipDecode.on('heartbeat', function() {
+    process.stdout.write('.');
+  });
+
+  pipDecode.on('info', function(data) {
+    console.log("Got handshake! Lang: " + data.lang + ', Version: ' + data.version);
+  });
+
+  pipDB.on('db_update', function(db) {
+    process.stdout.write('o');
+    io.emit('db_update', db);
+  });
+
+  var client = createClient();
   client.connect(FALLOUT_TCP_PORT, server.info.address);
 });
