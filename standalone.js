@@ -73,6 +73,15 @@ falloutClient.discover(function(err, server) {
         console.error(err);
       }
     });
+
+    socket.on('localmap_update', function() {
+      try {
+        var packet = pipboylib.PipEncode.createCommandPacket('RequestLocalMapSnapshot', {});
+        client.write(packet);
+      } catch(err) {
+        console.error(err);
+      }
+    });
   });
 
   io.listen(SOCKETIO_PORT);
@@ -80,6 +89,11 @@ falloutClient.discover(function(err, server) {
 
   pipDecode.on('db_update', function(data) {
     pipDB.emit('data', data);
+  });
+
+  pipDecode.on('localmap_update', function(data) {
+    var map = pipboylib.PipMap.decodeMap(data);
+    io.emit('localmap_update', map);
   });
 
   pipDecode.on('heartbeat', function() {
