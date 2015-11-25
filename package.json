@@ -4,7 +4,7 @@
   "description": "Relay for the pip boy from Fallout 4",
   "main": "cli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Tests are cool, we should do those.\""
   },
   "repository": {
     "type": "git",
