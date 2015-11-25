@@ -61,6 +61,20 @@ falloutClient.discover(function(err, server) {
 
   console.log('Discovered Fallout 4 service at ' + server.info.address + ':' + server.info.port);
 
+  var client = createClient();
+  client.connect(FALLOUT_TCP_PORT, server.info.address);
+
+  io.on('connection', function(socket) {
+    socket.on('command', function(type, args) {
+      try {
+        var packet = pipboylib.PipEncode.createCommandPacket(type, args);
+        client.write(packet);
+      } catch(err) {
+        console.error(err);
+      }
+    });
+  });
+
   io.listen(SOCKETIO_PORT);
   console.log('Socket.io server listening on port ' + SOCKETIO_PORT);
 
@@ -69,7 +83,7 @@ falloutClient.discover(function(err, server) {
   });
 
   pipDecode.on('heartbeat', function() {
-    process.stdout.write('.');
+    // process.stdout.write('.');
   });
 
   pipDecode.on('info', function(data) {
@@ -77,10 +91,7 @@ falloutClient.discover(function(err, server) {
   });
 
   pipDB.on('db_update', function(db) {
-    process.stdout.write('o');
+    // process.stdout.write('o');
     io.emit('db_update', db);
   });
-
-  var client = createClient();
-  client.connect(FALLOUT_TCP_PORT, server.info.address);
 });
