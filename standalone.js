@@ -26,9 +26,9 @@ function createClient() {
   client.on('connect', function () {
     console.log("Socket connected!");
 
-    setInterval(function() { // send heartbeat every 100ms or we get disconnected
+    setInterval(function() { // send heartbeat every 1000ms or we get disconnected
       client.write(HEARTBEAT_BUF);
-    }, 100);
+    }, 1000);
   });
 
   client.on('data', function (data) {
