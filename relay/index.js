@@ -138,13 +138,10 @@ TCPRelay.prototype.listen = function listen (upstreamInfo, cb) {
     });
 
     client.on('error', function (err) {
-      console.error(err);
+      throw err;
     });
 
     client.on('close', function (hadError) {
-      if (hadError) {
-        console.error('error on close');
-      }
       fakeClient.close();
     });
 
@@ -153,9 +150,6 @@ TCPRelay.prototype.listen = function listen (upstreamInfo, cb) {
     });
 
     fakeClient.on('close', function (hadError) {
-      if (hadError) {
-        console.error('error on close');
-      }
       client.close();
     });
 
@@ -164,12 +158,12 @@ TCPRelay.prototype.listen = function listen (upstreamInfo, cb) {
     });
 
     fakeClient.on('error', function (err) {
-      console.error(err);
+      throw err;
     });
   });
 
   this.server.on('error', function (err) {
-    console.error(err);
+    throw err;
   });
 
   this.server.listen({'port': upstreamInfo.port});
