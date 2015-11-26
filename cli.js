@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var pipboylib = require('pipboylib')
-var relay = require('pipboylib/lib/relay')
+var relay = require('relay')
 
 var hexy = require('hexy')
 var util = require('util')
