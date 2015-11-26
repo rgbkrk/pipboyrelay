@@ -26,6 +26,6 @@
   "dependencies": {
     "hexy": "^0.2.7",
     "socket.io": "^1.3.7",
-    "pipboylib": "^0.2.1"
+    "pipboylib": "0.3.0"
   }
 }
