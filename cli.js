@@ -16,6 +16,7 @@ var version = require('./package.json').version;
 program
   .version(version)
   .option('-t --output-type <type>', 'Output type', /^(hex|decoded)$/i, 'hex')
+  .option('-m --metadata', 'Metadata about telemetry')
 
 program.on('--help', function (){
   console.log('  Examples:');
@@ -34,11 +35,13 @@ pipboylib.connection.discover().then(function (server) {
 
   var udpRelay = new UDPRelay();
   udpRelay.bind(server.info, function (data, telemetry) {
-    var t = util.format('%s:%d -> %s:%d',
-                        telemetry.src.address, telemetry.src.port,
-                        telemetry.dst.address, telemetry.dst.port);
+    if (program.metdata) {
+      var t = util.format('%s:%d -> %s:%d',
+                          telemetry.src.address, telemetry.src.port,
+                          telemetry.dst.address, telemetry.dst.port);
 
-    console.error('[UDP Relay] ', t);
+      console.error('[UDP Relay] ', t);
+    }
     if (program.outputType == 'hex') {
       var dataChunk = data.slice(0, Math.min(data.length, maxShowLength));
       var dots = '';
@@ -57,19 +60,38 @@ pipboylib.connection.discover().then(function (server) {
   tcpServerInfo.port = pipboylib.constants.FALLOUT_TCP_PORT;
   tcpServerInfo.family = server.info.family;
 
-  var clientParser = pipboylib.decoding.createDataStream()
-  var serverParser = pipboylib.decoding.createDataStream()
+  var clientParser, serverParser;
+
+  if (program.outputType == 'decoded') {
+    var clientParser = pipboylib.decoding.createDataStream()
+    var serverParser = pipboylib.decoding.createDataStream()
+
+    serverParser.on("readable", function() {
+      var e;
+      while (e = this.read()) {
+        console.log(e);
+      }
+    });
+
+    clientParser.on("readable", function() {
+      var e;
+      while (e = this.read()) {
+        console.log(e);
+      }
+    });
+  }
 
   var tcpRelay = new TCPRelay();
   tcpRelay.listen(tcpServerInfo, function (data, telemetry) {
-    var t = util.format('%s:%d -> %s:%d',
-                        telemetry.src.address, telemetry.src.port,
-                        telemetry.dst.address, telemetry.dst.port);
+    if (program.metdata) {
+      var t = util.format('%s:%d -> %s:%d',
+                          telemetry.src.address, telemetry.src.port,
+                          telemetry.dst.address, telemetry.dst.port);
+      console.error('[TCP Relay] ', t);
+    }
 
     var fromServer = telemetry.src.port === tcpServerInfo.port &&
                      telemetry.src.address === tcpServerInfo.address;
-
-    console.error('[TCP Relay] ', t);
 
     if (program.outputType == 'hex') {
       var dataChunk = data.slice(0, Math.min(data.length, maxShowLength));
@@ -80,39 +102,19 @@ pipboylib.connection.discover().then(function (server) {
       console.log(hexy.hexy(dataChunk) + dots);
     } else {
       var parser;
-      var debundler;
       if (fromServer) {
         parser = serverParser;
-        debundler = function(e) {
-          if (e.type === pipboylib.constants.channels.DatabaseUpdate) {
-            var bundle = pipboylib.decoding.parseBinaryDatabase(e.payload);
-            e.type = "DatabaseUpdate";
-            return {
-              'type': "DatabaseUpdate",
-              'bundle': bundle
-            };
-          } else {
-            return e;
-          }
-        }
       } else {
         parser = clientParser;
-        debundler = function(x) {return x;};
       }
-
-      parser.on("readable", function() {
-        var e;
-        while (e = parser.read()) {
-          console.log(debundler(e));
-        }
-      });
       parser.write(data);
     }
   });
 
-  console.error('UDP and TCP Relay created for:',
-              server.MachineType, 'on', server.info.address)
-
+  if (program.metadata) {
+    console.error('UDP and TCP Relay created for:',
+                  server.MachineType, 'on', server.info.address)
+  }
 }).catch(function(err) {
   throw err;
 });
