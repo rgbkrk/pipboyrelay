@@ -9,15 +9,9 @@ var util = require('util');
 var UDPRelay = relay.UDPRelay;
 var TCPRelay = relay.TCPRelay;
 
-var falloutClient = new pipboylib.DiscoveryClient();
-
 var maxShowLength = 48;
 
-falloutClient.discover(function (error, server) {
-  if (error) {
-    console.error(error);
-    return;
-  }
+pipboylib.connection.discover().then(function (server) {
   console.log('Discovered: ', server);
 
   // Set up a new relay for each running server
@@ -38,7 +32,7 @@ falloutClient.discover(function (error, server) {
 
   var tcpServerInfo = {};
   tcpServerInfo.address = server.info.address;
-  tcpServerInfo.port = pipboylib.FALLOUT_TCP_PORT;
+  tcpServerInfo.port = pipboylib.constants.FALLOUT_TCP_PORT;
   tcpServerInfo.family = server.info.family;
 
   var tcpRelay = new TCPRelay();
@@ -57,4 +51,6 @@ falloutClient.discover(function (error, server) {
     console.log(hexy.hexy(dataChunk) + dots);
   });
   console.log('UDP and TCP Relay created for: ', server.info);
+}).catch(function(err) {
+  throw err;
 });
