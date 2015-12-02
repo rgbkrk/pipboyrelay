@@ -57,13 +57,17 @@ pipboylib.connection.discover().then(function (server) {
   tcpServerInfo.port = pipboylib.constants.FALLOUT_TCP_PORT;
   tcpServerInfo.family = server.info.family;
 
-  var parser = pipboylib.decoding.createDataStream()
+  var clientParser = pipboylib.decoding.createDataStream()
+  var serverParser = pipboylib.decoding.createDataStream()
 
   var tcpRelay = new TCPRelay();
   tcpRelay.listen(tcpServerInfo, function (data, telemetry) {
     var t = util.format('%s:%d -> %s:%d',
                         telemetry.src.address, telemetry.src.port,
                         telemetry.dst.address, telemetry.dst.port);
+
+    var fromServer = telemetry.src.port === tcpServerInfo.port &&
+                     telemetry.src.address === tcpServerInfo.address;
 
     console.error('[TCP Relay] ', t);
 
@@ -73,13 +77,33 @@ pipboylib.connection.discover().then(function (server) {
       if (dataChunk.length < data.length) {
         dots = '...';
       }
-
       console.log(hexy.hexy(dataChunk) + dots);
     } else {
+      var parser;
+      var debundler;
+      if (fromServer) {
+        parser = serverParser;
+        debundler = function(e) {
+          if (e.type === pipboylib.constants.channels.DatabaseUpdate) {
+            var bundle = pipboylib.decoding.parseBinaryDatabase(e.payload);
+            e.type = "DatabaseUpdate";
+            return {
+              'type': "DatabaseUpdate",
+              'bundle': bundle
+            };
+          } else {
+            return e;
+          }
+        }
+      } else {
+        parser = clientParser;
+        debundler = function(x) {return x;};
+      }
+
       parser.on("readable", function() {
         var e;
         while (e = parser.read()) {
-          console.log(e);
+          console.log(debundler(e));
         }
       });
       parser.write(data);
