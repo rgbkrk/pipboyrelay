@@ -27,5 +27,8 @@
     "commander": "^2.9.0",
     "hexy": "^0.2.7",
     "pipboylib": "1.1.0"
+  },
+  "engines": {
+    "node": ">= 4.0.0"
   }
 }

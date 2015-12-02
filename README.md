@@ -15,7 +15,7 @@ Totally a work in progress.
 * Fallout 4 for the PC or PS4. (XBONE has not been diagnosed)
 * pip boy app for Android or iOS
 * pip boy app enabled in-game on Fallout 4
-* nodejs, npm
+* nodejs >= 4.x, npm
 
 ## Installation
 
