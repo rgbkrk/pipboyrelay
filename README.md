@@ -6,16 +6,16 @@ Relay for the pip boy app for Fallout 4
 
 ![It's Close to Metal!](https://8d8dcdd952aa2708c2ff-519cda130c91226e76017ae910bdb276.ssl.cf1.rackcdn.com/close-to-metal-ba0f30d76e986ef9fa02e7fbb1c3a8a954b268777325adf87250e3f0cfc4ef17.png)
 
-Totally a work in progress.
-
 [Read the blog post for more details](https://getcarina.com/blog/fallout-4-service-discovery-and-relay)
+
+The entire protocol has been decoded and there are now full node bindings at [pipboylib](https://github.com/RobCoIndustries/pipboylib)!
 
 ## Requirements
 
 * Fallout 4 for the PC or PS4. (XBONE has not been diagnosed)
 * pip boy app for Android or iOS
 * pip boy app enabled in-game on Fallout 4
-* nodejs, npm
+* nodejs >= 4.x, npm
 
 ## Installation
 

@@ -24,8 +24,11 @@
   },
   "homepage": "https://github.com/rgbkrk/pipboyrelay#readme",
   "dependencies": {
+    "commander": "^2.9.0",
     "hexy": "^0.2.7",
-    "socket.io": "^1.3.7",
-    "pipboylib": "0.3.0"
+    "pipboylib": "1.1.0"
+  },
+  "engines": {
+    "node": ">= 4.0.0"
   }
 }

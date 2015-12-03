@@ -166,7 +166,7 @@ TCPRelay.prototype.listen = function listen (upstreamInfo, cb) {
     throw err;
   });
 
-  this.server.listen({'port': upstreamInfo.port});
+  this.server.listen(upstreamInfo.port, '0.0.0.0');
 };
 
 TCPRelay.prototype.close = function close (cb) {
