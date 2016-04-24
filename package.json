@@ -1,6 +1,6 @@
 {
   "name": "pipboyrelay",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Relay for the pip boy from Fallout 4",
   "main": "cli.js",
   "scripts": {
